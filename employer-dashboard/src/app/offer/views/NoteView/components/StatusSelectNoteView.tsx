@@ -11,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 interface Props {
-  handleChange: (e: SelectChangeEvent) => void;
+  handleChange: (e: SelectChangeEvent<number>) => void;
   state: number;
   name: string;
 }

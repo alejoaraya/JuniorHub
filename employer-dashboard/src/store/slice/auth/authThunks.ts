@@ -1,12 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { jwtVerify, JWTPayload } from "jose";
-import {
-  logOutUserFirebase,
-  signInWithEmailPassword,
-  signInWithGoogle,
-} from "../../../firebase/providers";
-import { checkingCredentials, login, logout } from "./authSlice";
 import { verifyToken } from "../../../helpers";
+import { checkingCredentials, login, logout } from "./authSlice";
 
 // export const checkingAuthentication = ({ email = "", password = "" }) => {
 //   return async (dispatch: Dispatch) => {
@@ -15,26 +9,26 @@ import { verifyToken } from "../../../helpers";
 //   };
 // };
 
-export const startGoogleSignIn = () => {
-  return async (dispatch: Dispatch) => {
-    dispatch(checkingCredentials());
-    const result = await signInWithGoogle();
+// export const startGoogleSignIn = () => {
+//   return async (dispatch: Dispatch) => {
+//     dispatch(checkingCredentials());
+//     const result = await signInWithGoogle();
 
-    if (result?.errorMessage === undefined)
-      throw new Error("result is undefined");
+//     if (result?.errorMessage === undefined)
+//       throw new Error("result is undefined");
 
-    if (!result?.ok) return dispatch(logout(result.errorMessage));
+//     if (!result?.ok) return dispatch(logout(result.errorMessage));
 
-    dispatch(
-      login({
-        displayName: result.displayName,
-        email: result.email,
-        photoURL: result.photoURL,
-        uid: result.uid,
-      })
-    );
-  };
-};
+//     dispatch(
+//       login({
+//         displayName: result.displayName,
+//         email: result.email,
+//         photoURL: result.photoURL,
+//         uid: result.uid,
+//       })
+//     );
+//   };
+// };
 
 export const startLogin = () => {
   return async (dispatch: Dispatch /* getState: () => RootState */) => {
@@ -44,6 +38,8 @@ export const startLogin = () => {
     if (!token) return;
 
     const payload = await verifyToken(token);
+    if (!payload) throw new Error("payload don't exist");
+    // console.log(payload);
 
     dispatch(
       login({
@@ -78,6 +74,7 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
       localStorage.setItem("token", token);
 
       const payload = await verifyToken(token);
+      if (!payload) throw new Error("payload don't exist");
 
       dispatch(
         login({
@@ -91,7 +88,7 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
 
       // return token;
     } catch (error) {
-      throw new Error("Error en la autenticación");
+      throw new Error("Error en la autenticación: " + error);
     }
 
     // if (result?.errorMessage === undefined)

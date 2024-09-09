@@ -5,10 +5,7 @@ import { Alert, Button, Grid2 as Grid, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { z, ZodError } from "zod";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import {
-  startGoogleSignIn,
-  startSignInWithEmailPassword,
-} from "../../../store/slice/auth/authThunks";
+import { startSignInWithEmailPassword } from "../../../store/slice/auth/authThunks";
 
 export const LoginFormComponent = () => {
   interface Credentials {

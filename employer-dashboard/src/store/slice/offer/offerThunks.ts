@@ -1,6 +1,7 @@
 import { Dispatch } from "@reduxjs/toolkit";
 
 import { Offer } from "../../../@types/types";
+import { loadTechnologies } from "../../../helpers/loadTechnologies";
 import { RootState } from "../../store";
 import {
   addNewEmptyNote,
@@ -11,8 +12,6 @@ import {
   // setUploadImages,
   udpateNote,
 } from "./offerSlice";
-import { loadTechnologies } from "../../../helpers/loadTechnologies";
-import { login } from "../auth";
 
 export const startCreationOffer = () => {
   return async (dispatch: Dispatch, getState: () => RootState) => {

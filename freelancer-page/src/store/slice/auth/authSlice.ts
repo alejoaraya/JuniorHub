@@ -1,21 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { Link, Technology, User } from "../../../@types/types";
 
-interface AuthState {
+interface AuthState extends User {
   status?: "checking" | "not-authenticated" | "autenticated";
-  uid: string | null | undefined;
-  displayName: string | null | undefined;
-  email: string | null | undefined;
-  photoURL: string | null | undefined;
+  name: string | null;
+  lastName: string | null;
+  mediaUrl: string | null;
+  description: string | null;
+  links: Link[];
+  technologies: Technology[];
   errorMessage?: string | null | undefined;
 }
 
 const initialState: AuthState = {
   status: "not-authenticated",
-  uid: "",
-  displayName: "",
-  email: "",
-  photoURL: "",
+  name: "",
+  lastName: "",
+  mediaUrl: "",
+  description: "",
+  links: [],
+  technologies: [],
   errorMessage: "",
 };
 
@@ -25,18 +30,22 @@ export const authSlice = createSlice({
   reducers: {
     login: (state, action: PayloadAction<AuthState>) => {
       state.status = "autenticated";
-      state.uid = action.payload.uid;
-      state.displayName = action.payload.displayName;
-      state.email = action.payload.email;
-      state.photoURL = action.payload.photoURL;
+      state.name = action.payload.name;
+      state.lastName = action.payload.lastName;
+      state.mediaUrl = action.payload.mediaUrl;
+      state.description = action.payload.description;
+      state.links = action.payload.links;
+      state.technologies = action.payload.technologies;
       state.errorMessage = null;
     },
     logout: (state, action: PayloadAction<string>) => {
       state.status = "not-authenticated";
-      state.uid = null;
-      state.displayName = null;
-      state.email = null;
-      state.photoURL = null;
+      state.name = null;
+      state.lastName = null;
+      state.mediaUrl = null;
+      state.description = null;
+      state.links = [];
+      state.technologies = [];
       state.errorMessage = action.payload;
     },
     checkingCredentials: (state) => {

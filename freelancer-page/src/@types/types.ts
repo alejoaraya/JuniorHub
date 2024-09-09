@@ -6,5 +6,23 @@ export interface Offer {
   estimatedTime: number;
   state: number;
   difficult: number;
-  technology: string[];
+  technology: Technology[];
+}
+export interface Link {
+  id: 0;
+  name: string;
+  url: string;
+}
+export interface Technology {
+  id: 0;
+  name: string;
+}
+
+export interface User {
+  name: string | null;
+  lastName: string | null;
+  mediaUrl: string | null;
+  description: string | null;
+  links: Link[] | null;
+  technologies: Technology[] | null;
 }

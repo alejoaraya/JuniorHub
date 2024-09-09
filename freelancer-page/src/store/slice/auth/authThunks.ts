@@ -14,24 +14,61 @@ import { checkingCredentials, login, logout } from "./authSlice";
 //   };
 // };
 
-export const startGoogleSignIn = () => {
+// export const startGoogleSignIn = () => {
+//   return async (dispatch: Dispatch) => {
+//     dispatch(checkingCredentials());
+//     const result = await signInWithGoogle();
+
+//     if (result?.errorMessage === undefined)
+//       throw new Error("result is undefined");
+
+//     if (!result?.ok) return dispatch(logout(result.errorMessage));
+
+//     dispatch(
+//       login({
+//         displayName: result.displayName,
+//         email: result.email,
+//         photoURL: result.photoURL,
+//         uid: result.uid,
+//       })
+//     );
+//   };
+// };
+
+export const startUploadImages = (files: FileList) => {
   return async (dispatch: Dispatch) => {
-    dispatch(checkingCredentials());
-    const result = await signInWithGoogle();
+    if (files.length <= 0) throw new Error("$files is empty");
 
-    if (result?.errorMessage === undefined)
-      throw new Error("result is undefined");
+    // dispatch(setSaving());
 
-    if (!result?.ok) return dispatch(logout(result.errorMessage));
+    console.log("startUploadImages", files);
 
-    dispatch(
-      login({
-        displayName: result.displayName,
-        email: result.email,
-        photoURL: result.photoURL,
-        uid: result.uid,
-      })
-    );
+    for (const file of files) {
+      const formData = new FormData();
+
+      formData.append("media", file);
+      formData.append("type", "image/jpeg");
+
+      try {
+        const resp = await fetch("https://juniorhub.somee.com/api/cloudinary", {
+          method: "POST",
+          headers: {
+            accept: "text/plain",
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        });
+        console.log(resp);
+
+        const data = await resp.json();
+        console.log(data);
+        if (!resp.ok) throw new Error("Couldn't upload image");
+
+        // dispatch(setUploadImages(data.secure_url));
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
 };
 

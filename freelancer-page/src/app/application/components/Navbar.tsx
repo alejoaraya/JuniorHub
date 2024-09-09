@@ -1,3 +1,4 @@
+import { LogoutOutlined } from "@mui/icons-material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
@@ -11,6 +12,7 @@ import { alpha, styled } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
+import { useNavigate } from "react-router";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -53,6 +55,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const Navbar = () => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -69,6 +72,7 @@ export const Navbar = () => {
   };
 
   const handleMenuClose = () => {
+    navigate("/profile");
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -95,7 +99,10 @@ export const Navbar = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        <LogoutOutlined />
+        Log out
+      </MenuItem>
     </Menu>
   );
 

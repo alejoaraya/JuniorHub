@@ -7,7 +7,7 @@ import {
 import { ChangeEvent } from "react";
 
 interface Props {
-  handleChange: (e: ChangeEvent<number>) => void;
+  handleChange: (e: ChangeEvent) => void;
   price: number;
   name: string;
 }

@@ -10,7 +10,6 @@ export const loadNotes = async (uid: string) => {
   const notes: Offer[] = [];
   docs.forEach((doc) => {
     notes.push({
-      id: doc.id,
       ...(doc.data() as Offer),
     });
   });

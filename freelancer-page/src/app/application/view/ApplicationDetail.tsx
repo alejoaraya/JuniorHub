@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Grid2 as Grid,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, Grid2 as Grid, Typography } from "@mui/material";
 import { TableApplicationDetail } from "./ApplicationDetail/components/TableApplicationDetail";
 
 export const ApplicationDetail = () => {

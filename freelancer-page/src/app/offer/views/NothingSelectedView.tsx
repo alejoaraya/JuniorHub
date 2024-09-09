@@ -1,5 +1,5 @@
 import { AddOutlined, SearchOutlined } from "@mui/icons-material";
-import { Fab, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/hooks";
 import { startCreationOffer } from "../../../store";
 

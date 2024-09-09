@@ -2,7 +2,7 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { FirebaseAuth } from "../firebase/config";
-import { login, logout, startLoadingNotes } from "../store";
+import { login, logout } from "../store";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
 export const useCheckAuth = () => {

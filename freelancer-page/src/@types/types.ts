@@ -22,6 +22,7 @@ export interface User {
   name: string | null;
   lastName: string | null;
   mediaUrl: string | null;
+  email: string | null;
   description: string | null;
   links: Link[] | null;
   technologies: Technology[] | null;

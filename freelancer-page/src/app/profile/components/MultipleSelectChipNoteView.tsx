@@ -8,7 +8,8 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Theme, useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../../hooks/hooks";
+import { Technology } from "../../../@types/types";
+import { loadTechnologies } from "../../../helpers";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,9 +53,22 @@ export const MultipleSelectChipNoteView = ({
   onChangeTechnologies,
   technologiesSelected = [],
 }: Props) => {
-  const { technologies: technologiesList } = useAppSelector(
-    (state) => state.auth
-  );
+  // const { technologies: technologiesList } = useAppSelector(
+  //   (state) => state.auth
+  // );
+  const [technologiesList, setTechnologiesList] = useState<Technology[]>([]);
+
+  const getTechnologies = async () => {
+    const technologies = await loadTechnologies();
+    setTechnologiesList(technologies);
+
+    // if (!technologies) throw new Error("technologies is empty");
+    // return technologies;
+  };
+
+  useEffect(() => {
+    getTechnologies();
+  }, []);
 
   useEffect(() => {
     setTechnology(technologiesSelected);

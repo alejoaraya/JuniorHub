@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "./slice/auth";
 import { offerSlice } from "./slice/offer";
+import { uiSlice } from "./slice/ui/uiSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
     offer: offerSlice.reducer,
+    ui: uiSlice.reducer,
     // [juniorHubApi.reducerPath]: juniorHubApi.reducer,
   },
   // middleware: (getDefaultMiddleware) =>

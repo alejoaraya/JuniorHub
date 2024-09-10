@@ -13,6 +13,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useNavigate } from "react-router";
+import { startLogOutUser } from "../../../store";
+import { useAppDispatch } from "../../../hooks/hooks";
+import { useFormik } from "formik";
+import { setQuerySearch } from "../../../store/slice/ui/uiSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -55,6 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const Navbar = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -71,8 +76,24 @@ export const Navbar = () => {
     setMobileMoreAnchorEl(null);
   };
 
+  const { handleChange, handleSubmit, values } = useFormik({
+    initialValues: {
+      querySearch: "",
+    },
+    onSubmit: (values: { querySearch: string }) => {
+      navigate("/");
+      dispatch(setQuerySearch(values.querySearch));
+    },
+  });
+
   const handleMenuClose = () => {
     navigate("/profile");
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+  const onLogout = () => {
+    dispatch(startLogOutUser());
+
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -99,7 +120,7 @@ export const Navbar = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={onLogout}>
         <LogoutOutlined />
         Log out
       </MenuItem>
@@ -155,6 +176,10 @@ export const Navbar = () => {
         </IconButton>
         <p>Profile</p>
       </MenuItem>
+      <MenuItem onClick={onLogout}>
+        <LogoutOutlined />
+        Log out
+      </MenuItem>
     </Menu>
   );
 
@@ -179,15 +204,20 @@ export const Navbar = () => {
           >
             JuniorHub
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder='Search…'
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          <form onSubmit={handleSubmit} action='search'>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                onChange={handleChange}
+                value={values.querySearch}
+                name='querySearch'
+                placeholder='Search…'
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+          </form>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">

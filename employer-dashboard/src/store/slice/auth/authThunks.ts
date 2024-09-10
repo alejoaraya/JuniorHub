@@ -107,34 +107,38 @@ export const startCreatingUserWithEmailPassword = ({
   return async (dispatch: Dispatch) => {
     dispatch(checkingCredentials());
 
-    const res = await fetch(
-      "https://juniorhub.somee.com/api/account/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, name, lastName, role: 0 }),
+    try {
+      const res = await fetch(
+        "https://juniorhub.somee.com/api/account/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password, name, lastName, role: 0 }),
+        }
+      );
+      // const data = await res.json();
+
+      console.log("res:", res);
+
+      if (!res.ok) {
+        // console.error("error data:", data);
+        return;
       }
-    );
-    // const data = await res.json();
-
-    console.log("res:", res);
-
-    if (!res.ok) {
-      // console.error("error data:", data);
-      return;
+      // console.log("well data :", data);
+      dispatch(
+        login({
+          uid: "",
+          photoURL: "",
+          email,
+          firstName: name,
+          lastName,
+        })
+      );
+    } catch (error) {
+      console.log(error);
     }
-    // console.log("well data :", data);
-    dispatch(
-      login({
-        uid: "",
-        photoURL: "",
-        email,
-        firstName: name,
-        lastName,
-      })
-    );
 
     //TODO: if (!ok) return dispatch(logout(data));
 

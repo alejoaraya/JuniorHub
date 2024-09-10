@@ -9,32 +9,33 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
-import { Link, Offer, Technology, User } from "../../../@types/types";
-import { loadTechnologies } from "../../../helpers";
+import { Link, Technology, User } from "../../../@types/types";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { MultipleSelectChipNoteView } from "../components";
 import { ProfileLayout } from "../layout/ProfileLayout";
+import { loadTechnologies } from "../../../helpers";
+import { MultipleSelectChipNoteView } from "../components";
 import { startUploadImages } from "../../../store";
 
 export const EditProfile = () => {
-  const { description, lastName, links, mediaUrl, name, technologies } =
+  const { description, lastName, links, mediaUrl, name, technologies, email } =
     useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   interface InitialValues extends User {
-    github: Link;
-    linkedIn: Link;
-    porfolio: Link;
+    github: string;
+    linkedIn: string;
+    porfolio: string;
   }
 
   const initialValues: InitialValues = {
-    github: links[0],
-    linkedIn: links[1],
-    porfolio: links[2],
+    github: "",
+    linkedIn: "",
+    porfolio: "",
     description,
+    email,
     lastName,
     links,
     mediaUrl,
@@ -51,7 +52,7 @@ export const EditProfile = () => {
     // values.price = Number(values.price);
     // console.table(values);
 
-    values.links = [values.github, values.linkedIn, values.porfolio];
+    // values.links = [values.github, values.linkedIn, values.porfolio];
 
     Swal.fire({
       title: "Do you want to SAVE?",
@@ -69,13 +70,16 @@ export const EditProfile = () => {
     });
   };
 
+  const [technologiesList, setTechnologiesList] = useState<Technology[]>([]);
+
   const getTechnologies = async () => {
-    return await loadTechnologies();
+    const technologies = await loadTechnologies();
+    setTechnologiesList(technologies);
   };
 
-  const technologiesList = [];
-  // const technologiesList = getTechnologies();
-  // if (!technologiesList) throw new Error("technologiesList is empty ");
+  useEffect(() => {
+    getTechnologies();
+  }, []);
 
   const onChangeTechnologies = (technologies: string[]): void => {
     const result: Technology[] = [];
@@ -205,11 +209,6 @@ export const EditProfile = () => {
             />
           </Grid>
 
-          <MultipleSelectChipNoteView
-            onChangeTechnologies={onChangeTechnologies}
-            technologiesSelected={technologies.map((tech) => tech.name)}
-          />
-
           <TextField
             type='text'
             variant='filled'
@@ -217,7 +216,7 @@ export const EditProfile = () => {
             placeholder='Enter a title'
             label='Github'
             onChange={handleChange}
-            name='title'
+            name='github'
             value={values.github}
           />
           <TextField
@@ -227,7 +226,7 @@ export const EditProfile = () => {
             placeholder='Enter a title'
             label='LinkedIn'
             onChange={handleChange}
-            name='title'
+            name='linkedIn'
             value={values.linkedIn}
           />
           <TextField
@@ -237,7 +236,7 @@ export const EditProfile = () => {
             placeholder='Enter a title'
             label='Porfolio'
             onChange={handleChange}
-            name='title'
+            name='porfolio'
             value={values.porfolio}
           />
 
@@ -251,6 +250,10 @@ export const EditProfile = () => {
             onChange={handleChange}
             name='description'
             value={values.description}
+          />
+          <MultipleSelectChipNoteView
+            onChangeTechnologies={onChangeTechnologies}
+            technologiesSelected={technologies.map((tech) => tech.name)}
           />
         </Grid>
       </Grid>

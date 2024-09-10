@@ -1,12 +1,32 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import {
-  logOutUserFirebase,
-  registerUserWithEmailAndPassword,
-  signInWithEmailPassword,
-  signInWithGoogle,
-} from "../../../firebase/providers";
+import { logOutUserFirebase } from "../../../firebase/providers";
+import { verifyToken } from "../../../helpers/verifyToken";
 import { checkingCredentials, login, logout } from "./authSlice";
 
+export const startLogin = () => {
+  return async (dispatch: Dispatch /* getState: () => RootState */) => {
+    // const { uid } = getState().auth;
+    // if (!uid) throw new Error("UID is undefined");
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const payload = await verifyToken(token);
+    if (!payload) throw new Error("payload don't exist");
+    // console.log(payload);
+
+    dispatch(
+      login({
+        description: payload.description,
+        links: payload.links,
+        mediaUrl: payload.mediaUrl,
+        name: payload.name,
+        technologies: payload.technologies,
+        lastName: payload.lastName,
+        email: payload.email,
+      })
+    );
+  };
+};
 // export const checkingAuthentication = ({ email = "", password = "" }) => {
 //   return async (dispatch: Dispatch) => {
 //     dispatch(checkingCredentials());
@@ -36,7 +56,7 @@ import { checkingCredentials, login, logout } from "./authSlice";
 // };
 
 export const startUploadImages = (files: FileList) => {
-  return async (dispatch: Dispatch) => {
+  return async (/* dispatch: Dispatch */) => {
     if (files.length <= 0) throw new Error("$files is empty");
 
     // dispatch(setSaving());
@@ -50,11 +70,12 @@ export const startUploadImages = (files: FileList) => {
       formData.append("type", "image/jpeg");
 
       try {
+        const userToken = localStorage.getItem("token");
+
         const resp = await fetch("https://juniorhub.somee.com/api/cloudinary", {
           method: "POST",
           headers: {
-            accept: "text/plain",
-            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userToken}`,
           },
           body: formData,
         });
@@ -75,53 +96,107 @@ export const startUploadImages = (files: FileList) => {
 export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
   return async (dispatch: Dispatch) => {
     dispatch(checkingCredentials());
-    const result = await signInWithEmailPassword({ email, password });
 
-    if (result?.errorMessage === undefined)
-      throw new Error("result is undefined");
+    try {
+      // console.log({ email, password });
 
-    if (!result?.ok) return dispatch(logout(result.errorMessage));
+      const res = await fetch("https://juniorhub.somee.com/api/account/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      // console.log(data);
 
-    dispatch(
-      login({
-        displayName: result.displayName,
-        email: result.email,
-        photoURL: result.photoURL,
-        uid: result.uid,
-      })
-    );
+      if (!res.ok) {
+        throw new Error("Error en la autenticación");
+      }
+      const token = data.token;
+      localStorage.setItem("token", token);
+
+      const payload = await verifyToken(token);
+      // console.log(payload);
+
+      if (!payload) throw new Error("payload don't exist");
+
+      dispatch(
+        login({
+          description: payload.description,
+          links: payload.links,
+          mediaUrl: payload.mediaUrl,
+          name: payload.name,
+          technologies: payload.technologies,
+          email: payload.email,
+          lastName: payload.lastName,
+        })
+      );
+
+      // return token;
+    } catch (error) {
+      throw new Error("Error en la autenticación: " + error);
+    }
   };
 };
 
 export const startCreatingUserWithEmailPassword = ({
   email = "",
   password = "",
-  displayName = "",
+  firstName: name = "",
+  lastName = "",
 }) => {
   return async (dispatch: Dispatch) => {
     dispatch(checkingCredentials());
 
-    const res = await registerUserWithEmailAndPassword({
-      email,
-      password,
-      displayName,
-    });
+    try {
+      const res = await fetch(
+        "https://juniorhub.somee.com/api/account/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password, name, lastName, role: 0 }),
+        }
+      );
+      // const data = await res.json();
 
-    if (!res || res.errorMessage === undefined)
-      throw new Error("variables of $res are empties");
+      // console.log("res:", res);
 
-    const { photoURL, uid, ok, errorMessage } = res;
+      if (!res.ok) {
+        // console.error("error data:", data);
+        return;
+      }
+      // console.log("well data :", data);
+      dispatch(
+        login({
+          description: "",
+          links: [],
+          mediaUrl: "",
+          technologies: [],
+          email,
+          name,
+          lastName,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
-    if (!ok) return dispatch(logout(errorMessage));
+    //TODO: if (!ok) return dispatch(logout(data));
 
-    dispatch(
-      login({
-        email,
-        displayName,
-        photoURL,
-        uid,
-      })
-    );
+    //* **CHECK IT**
+    //* const res = await registerUserWithEmailAndPassword({
+    //*   email,
+    //*   password,
+    //*   displayName,
+    //* });
+
+    //* if (!res || res.errorMessage === undefined)
+    //*   throw new Error("variables of $res are empties");
+
+    //* const { photoURL, uid, ok, errorMessage } = res;
   };
 };
 

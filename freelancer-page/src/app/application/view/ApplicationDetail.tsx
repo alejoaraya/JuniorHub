@@ -1,7 +1,23 @@
 import { Box, Button, Chip, Grid2 as Grid, Typography } from "@mui/material";
 import { TableApplicationDetail } from "./ApplicationDetail/components/TableApplicationDetail";
+import Swal from "sweetalert2";
 
 export const ApplicationDetail = () => {
+  const onApply = () => {
+    Swal.fire({
+      title: "Do you want to APPLY?",
+      icon: "question",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Apply",
+      cancelButtonText: "Cancel",
+    }).then((value) => {
+      if (value.value) {
+        // dispatch(startUpdateOffer(values));
+      }
+    });
+  };
+
   return (
     <Box
       bgcolor={"Background"}
@@ -54,7 +70,7 @@ export const ApplicationDetail = () => {
           </Typography>
           {/* <Divider /> */}
           <TableApplicationDetail />
-          <Button variant='contained' size='large'>
+          <Button onClick={onApply} variant='contained' size='large'>
             Postularse
           </Button>
           {/* <Box display={"flex"}>

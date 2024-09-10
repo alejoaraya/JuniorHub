@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
-import { startLoadingTechnologies, startLogin } from "../store";
+import { startLogin } from "../store";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
 export const useCheckAuth = () => {
@@ -8,7 +8,7 @@ export const useCheckAuth = () => {
   const { status } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(startLoadingTechnologies());
+    // dispatch(startLoadingTechnologies());
     dispatch(startLogin());
 
     // onAuthStateChanged(FirebaseAuth, async (user) => {

@@ -18,7 +18,7 @@ import { ProfileLayout } from "../layout/ProfileLayout";
 export const Profile = () => {
   const navigate = useNavigate();
   const onEdit = () => {
-    navigate("edit");
+    navigate("/profile/edit");
   };
 
   return (

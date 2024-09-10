@@ -8,6 +8,7 @@ interface AuthState extends User {
   lastName: string | null;
   mediaUrl: string | null;
   description: string | null;
+  email: string | null;
   links: Link[];
   technologies: Technology[];
   errorMessage?: string | null | undefined;
@@ -19,7 +20,24 @@ const initialState: AuthState = {
   lastName: "",
   mediaUrl: "",
   description: "",
-  links: [],
+  email: "",
+  links: [
+    {
+      id: 0,
+      name: "",
+      url: "",
+    },
+    {
+      id: 0,
+      name: "",
+      url: "",
+    },
+    {
+      id: 0,
+      name: "",
+      url: "",
+    },
+  ],
   technologies: [],
   errorMessage: "",
 };
@@ -32,15 +50,19 @@ export const authSlice = createSlice({
       state.status = "autenticated";
       state.name = action.payload.name;
       state.lastName = action.payload.lastName;
-      state.mediaUrl = action.payload.mediaUrl;
-      state.description = action.payload.description;
-      state.links = action.payload.links;
-      state.technologies = action.payload.technologies;
+      state.mediaUrl = action.payload.mediaUrl || initialState.mediaUrl;
+      state.email = action.payload.email;
+      state.description =
+        action.payload.description || initialState.description;
+      state.links = action.payload.links || initialState.links;
+      state.technologies =
+        action.payload.technologies || initialState.technologies;
       state.errorMessage = null;
     },
     logout: (state, action: PayloadAction<string>) => {
       state.status = "not-authenticated";
       state.name = null;
+      state.email = null;
       state.lastName = null;
       state.mediaUrl = null;
       state.description = null;

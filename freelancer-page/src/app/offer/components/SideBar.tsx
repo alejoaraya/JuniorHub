@@ -44,7 +44,7 @@ export const SideBar = ({ drawerWidth }: Props) => {
 
         <List>
           {notes.map((note: Offer) => (
-            <SideBarItem key={note.id} note={note} />
+            <SideBarItem key={note.id} application={note} />
           ))}
         </List>
       </Drawer>

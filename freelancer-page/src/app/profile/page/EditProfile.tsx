@@ -11,12 +11,12 @@ import {
 import { useFormik } from "formik";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
-import { Link, Technology, User } from "../../../@types/types";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { ProfileLayout } from "../layout/ProfileLayout";
+import { Technology, User } from "../../../@types/types";
 import { loadTechnologies } from "../../../helpers";
-import { MultipleSelectChipNoteView } from "../components";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { startUploadImages } from "../../../store";
+import { MultipleSelectChipNoteView } from "../components";
+import { ProfileLayout } from "../layout/ProfileLayout";
 
 export const EditProfile = () => {
   const { description, lastName, links, mediaUrl, name, technologies, email } =

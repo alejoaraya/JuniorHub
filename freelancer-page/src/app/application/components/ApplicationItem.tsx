@@ -16,7 +16,7 @@ interface Props {
   application: Offer;
 }
 
-export const SideBarItem = ({ application }: Props) => {
+export const ApplicationItem = ({ application }: Props) => {
   const dispatch = useAppDispatch();
 
   const onActiveNote = () => {

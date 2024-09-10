@@ -1,7 +1,7 @@
 import { Box, List, Pagination, Typography } from "@mui/material";
 import { Offer } from "../../../@types/types";
-import { SideBarItem } from "../../offer/components/SideBarItem";
 import { useAppSelector } from "../../../hooks/hooks";
+import { ApplicationItem } from "./ApplicationItem";
 
 export const ApplicationsList = () => {
   const { querySearch } = useAppSelector((state) => state.ui);
@@ -35,7 +35,7 @@ export const ApplicationsList = () => {
             </Typography>
           </Box>
           {filterApplications.map((application: Offer) => (
-            <SideBarItem key={application.id} application={application} />
+            <ApplicationItem key={application.id} application={application} />
           ))}
         </Box>
       </List>

@@ -9,6 +9,7 @@ interface AuthState extends User {
   mediaUrl: string | null;
   description: string | null;
   email: string | null;
+  valorationEnum: number | null;
   links: Link[];
   technologies: Technology[];
   errorMessage?: string | null | undefined;
@@ -21,25 +22,10 @@ const initialState: AuthState = {
   mediaUrl: "",
   description: "",
   email: "",
-  links: [
-    {
-      id: 0,
-      name: "",
-      url: "",
-    },
-    {
-      id: 0,
-      name: "",
-      url: "",
-    },
-    {
-      id: 0,
-      name: "",
-      url: "",
-    },
-  ],
+  links: [],
   technologies: [],
   errorMessage: "",
+  valorationEnum: 0,
 };
 
 export const authSlice = createSlice({
@@ -51,6 +37,7 @@ export const authSlice = createSlice({
       state.name = action.payload.name;
       state.lastName = action.payload.lastName;
       state.mediaUrl = action.payload.mediaUrl || initialState.mediaUrl;
+      state.valorationEnum = action.payload.valorationEnum;
       state.email = action.payload.email;
       state.description =
         action.payload.description || initialState.description;
@@ -64,6 +51,7 @@ export const authSlice = createSlice({
       state.name = null;
       state.email = null;
       state.lastName = null;
+      state.valorationEnum = null;
       state.mediaUrl = null;
       state.description = null;
       state.links = [];
@@ -73,7 +61,26 @@ export const authSlice = createSlice({
     checkingCredentials: (state) => {
       state.status = "checking";
     },
+    updateProfile: (state, action: PayloadAction<User>) => {
+      state.description = action.payload.description;
+      // state.email = action.payload.email;
+      state.lastName = action.payload.lastName;
+      state.mediaUrl = action.payload.mediaUrl;
+      // state.valorationEnum = action.payload.valorationEnum;
+      state.name = action.payload.name;
+      state.links = action.payload.links || [];
+      state.technologies = action.payload.technologies || [];
+    },
+    setUploadImage: (state, action: PayloadAction<string>) => {
+      state.mediaUrl = action.payload;
+    },
   },
 });
 
-export const { login, logout, checkingCredentials } = authSlice.actions;
+export const {
+  login,
+  logout,
+  checkingCredentials,
+  updateProfile,
+  setUploadImage,
+} = authSlice.actions;

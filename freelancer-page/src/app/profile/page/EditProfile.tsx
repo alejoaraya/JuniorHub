@@ -14,20 +14,28 @@ import Swal from "sweetalert2";
 import { Technology, User } from "../../../@types/types";
 import { loadTechnologies } from "../../../helpers";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { startUploadImages } from "../../../store";
+import { startUpdateProfile, startUploadImages } from "../../../store";
 import { MultipleSelectChipNoteView } from "../components";
 import { ProfileLayout } from "../layout/ProfileLayout";
 
 export const EditProfile = () => {
-  const { description, lastName, links, mediaUrl, name, technologies, email } =
-    useAppSelector((state) => state.auth);
+  const {
+    description,
+    valorationEnum,
+    lastName,
+    links,
+    mediaUrl,
+    name,
+    technologies,
+    email,
+  } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   interface InitialValues extends User {
-    github: string;
-    linkedIn: string;
-    porfolio: string;
+    github?: string | null;
+    linkedIn?: string | null;
+    porfolio?: string | null;
   }
 
   const initialValues: InitialValues = {
@@ -35,6 +43,7 @@ export const EditProfile = () => {
     linkedIn: "",
     porfolio: "",
     description,
+    valorationEnum,
     email,
     lastName,
     links,
@@ -50,10 +59,30 @@ export const EditProfile = () => {
 
   const onSaveOffer = () => {
     // values.price = Number(values.price);
-    // console.table(values);
+    console.table(values);
+    values.links = [
+      {
+        id: 1,
+        name: "Github",
+        url: values.github || "",
+      },
+      {
+        id: 2,
+        name: "LinkedIn",
+        url: values.linkedIn || "",
+      },
+      {
+        id: 3,
+        name: "Porfolio",
+        url: values.porfolio || "",
+      },
+    ];
 
-    // values.links = [values.github, values.linkedIn, values.porfolio];
+    delete values.github;
+    delete values.linkedIn;
+    delete values.porfolio;
 
+    console.table(values);
     Swal.fire({
       title: "Do you want to SAVE?",
       icon: "question",
@@ -63,9 +92,7 @@ export const EditProfile = () => {
       cancelButtonText: "Cancel",
     }).then((value) => {
       if (value.value) {
-        console.log(values);
-
-        // dispatch(startUpdateOffer(values));
+        dispatch(startUpdateProfile(values));
       }
     });
   };
@@ -176,7 +203,11 @@ export const EditProfile = () => {
         </Grid>
         <Grid container gap={4}>
           <Grid container alignItems={"end"}>
-            <Avatar alt='Alejo Araya' sx={{ width: 180, height: 180 }} />
+            <Avatar
+              src={mediaUrl || ""}
+              alt='Alejo Araya'
+              sx={{ width: 180, height: 180 }}
+            />
             <Tooltip
               onClick={() => fileInputRef.current?.click()}
               title='Change image'

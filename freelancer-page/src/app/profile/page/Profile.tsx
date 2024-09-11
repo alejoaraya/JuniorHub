@@ -1,4 +1,10 @@
-import { EditSharp, GitHub, LinkedIn } from "@mui/icons-material";
+import {
+  EditSharp,
+  GitHub,
+  LanguageOutlined,
+  LinkedIn,
+  MailOutline,
+} from "@mui/icons-material";
 import {
   Avatar,
   Chip,
@@ -13,9 +19,20 @@ import {
 import { useNavigate } from "react-router";
 
 import { Link as LinkRouter } from "react-router-dom";
+import { useAppSelector } from "../../../hooks/hooks";
 import { ProfileLayout } from "../layout/ProfileLayout";
 
 export const Profile = () => {
+  const {
+    description,
+    email,
+    lastName,
+    links,
+    mediaUrl,
+    name,
+    technologies,
+    valorationEnum,
+  } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const onEdit = () => {
     navigate("/profile/edit");
@@ -23,21 +40,25 @@ export const Profile = () => {
 
   return (
     <ProfileLayout>
-      <Grid container flexDirection={"column"} gap={3}>
+      <Grid container width={"100%"} flexDirection={"column"} gap={3}>
         <Grid container justifyContent={"space-between"}>
           <Grid container alignItems={"center"} gap={5}>
             <Grid>
-              <Avatar alt='Alejo Araya' sx={{ width: 180, height: 180 }} />
+              <Avatar
+                alt={`${name} ${lastName}`}
+                sx={{ width: 180, height: 180 }}
+                src={mediaUrl || ""}
+              />
             </Grid>
             <Grid container gap={1} flexDirection={"column"}>
               <Grid>
                 <Typography variant='h4' fontWeight={"bold"}>
-                  Alejo Araya
+                  {`${name} ${lastName}`}
                 </Typography>
               </Grid>
               <Grid>
-                <Typography variant='subtitle1'>Front-end developer</Typography>
-                <Rating name='read-only' value={2} readOnly />
+                {/* <Typography variant='subtitle1'>Front-end developer</Typography> */}
+                <Rating name='read-only' value={valorationEnum} readOnly />
               </Grid>
             </Grid>
           </Grid>
@@ -51,48 +72,39 @@ export const Profile = () => {
         </Grid>
         <Divider />
         <Grid container gap={2}>
-          <Chip color='primary' label='React' />
-          <Chip color='primary' label='Next' />
-          <Chip color='primary' label='TypeScript' />
-          <Chip color='primary' label='Redux' />
-          <Chip color='primary' label='Tailwind' />
+          {technologies.map((tech) => (
+            <Chip key={tech.id} color='primary' label={tech.name} />
+          ))}
         </Grid>
         <Grid container gap={1} flexDirection={"column"}>
+          {links.map((link) => (
+            <Grid
+              key={link.id}
+              container
+              // display={`${!links[0] && "none"}`}
+              gap={1}
+              alignItems={"center"}
+            >
+              {link.id === 1 && <GitHub />}
+              {link.id === 2 && <LinkedIn />}
+              {link.id === 3 && <LanguageOutlined />}
+              <Link color='secondary' to={`${link.url}`} component={LinkRouter}>
+                {link.name}
+              </Link>
+            </Grid>
+          ))}
+
           <Grid container gap={1} alignItems={"center"}>
-            <GitHub />
-            <Link color='secondary' to={"#"} component={LinkRouter}>
-              GitHub
-            </Link>
-          </Grid>
-          <Grid container gap={1} alignItems={"center"}>
-            <LinkedIn />
-            <Link color='secondary' to={"#"} component={LinkRouter}>
-              LinkedIn
-            </Link>
+            <MailOutline />
+            <Typography>{email}</Typography>
           </Grid>
         </Grid>
-        <Typography variant='subtitle1'>
-          Laboris nostrud laboris tempor incididunt officia Lorem ex dolore
-          exercitation deserunt velit consequat. Labore aliqua sunt
-          reprehenderit voluptate tempor enim culpa Lorem dolore consequat sit
-          cupidatat dolor laborum. Et do et veniam qui magna non consectetur
-          laborum exercitation exercitation duis. Consequat amet aliqua
-          reprehenderit aute. Qui anim elit incididunt do Lorem laborum aliqua
-          ut et commodo minim cupidatat commodo. Dolore sit reprehenderit
-          eiusmod laborum. Irure veniam Lorem ex cupidatat ut ex esse culpa eu
-          commodo magna incididunt enim velit. Veniam sit in velit consequat
-          laborum aliquip laboris. Aliqua consequat consequat do adipisicing
-          mollit voluptate excepteur qui velit ad. Voluptate veniam adipisicing
-          Lorem in in est quis ex exercitation excepteur dolore. Non nulla do
-          veniam elit dolore. Ullamco magna adipisicing excepteur nostrud sint
-          sint consectetur ullamco id nulla id consequat anim. Occaecat sint
-          culpa fugiat veniam commodo in officia esse dolore. Commodo Lorem
-          aliqua ullamco ad elit adipisicing fugiat nisi ipsum nostrud in
-          laboris. Sunt fugiat voluptate duis cillum. Sit in excepteur eiusmod
-          consequat incididunt duis. Sunt aliqua do elit veniam cupidatat dolor
-          sit aute consectetur ipsum. Labore incididunt esse incididunt esse
-          proident commodo aliquip culpa Lorem est exercitation.
-        </Typography>
+        <Divider />
+        <Grid container>
+          <Typography display={"inline"} variant='subtitle1'>
+            {description}
+          </Typography>
+        </Grid>
       </Grid>
     </ProfileLayout>
   );

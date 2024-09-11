@@ -14,9 +14,10 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { startLogOutUser } from "../../../store";
-import { useAppDispatch } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { useFormik } from "formik";
 import { setQuerySearch } from "../../../store/slice/ui/uiSlice";
+import { Avatar } from "@mui/material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -60,6 +61,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export const Navbar = () => {
   const dispatch = useAppDispatch();
+  const { mediaUrl } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -243,7 +245,8 @@ export const Navbar = () => {
               onClick={handleProfileMenuOpen}
               color='inherit'
             >
-              <AccountCircle />
+              <Avatar src={mediaUrl || ""} />
+              {/* <AccountCircle /> */}
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>

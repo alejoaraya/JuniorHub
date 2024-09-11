@@ -1,8 +1,14 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { logOutUserFirebase } from "../../../firebase/providers";
-import { verifyToken } from "../../../helpers/verifyToken";
-import { checkingCredentials, login, logout } from "./authSlice";
+import { User } from "../../../@types/types";
+import {
+  checkingCredentials,
+  login,
+  logout,
+  setUploadImage,
+  updateProfile,
+} from "./authSlice";
 
+// ** LOGEO
 export const startLogin = () => {
   return async (dispatch: Dispatch /* getState: () => RootState */) => {
     // const { uid } = getState().auth;
@@ -10,9 +16,23 @@ export const startLogin = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const payload = await verifyToken(token);
-    if (!payload) throw new Error("payload don't exist");
+    // const payload = await verifyToken(token);
+    // if (!payload) throw new Error("payload don't exist");
     // console.log(payload);
+
+    const res = await fetch(
+      "https://juniorhub.somee.com/api/freelancers/current",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const payload = await res.json();
+    console.log(payload);
 
     dispatch(
       login({
@@ -23,73 +43,9 @@ export const startLogin = () => {
         technologies: payload.technologies,
         lastName: payload.lastName,
         email: payload.email,
+        valorationEnum: payload.valorationEnum,
       })
     );
-  };
-};
-// export const checkingAuthentication = ({ email = "", password = "" }) => {
-//   return async (dispatch: Dispatch) => {
-//     dispatch(checkingCredentials());
-//     dispatch(createAnAccount(email, password));
-//   };
-// };
-
-// export const startGoogleSignIn = () => {
-//   return async (dispatch: Dispatch) => {
-//     dispatch(checkingCredentials());
-//     const result = await signInWithGoogle();
-
-//     if (result?.errorMessage === undefined)
-//       throw new Error("result is undefined");
-
-//     if (!result?.ok) return dispatch(logout(result.errorMessage));
-
-//     dispatch(
-//       login({
-//         displayName: result.displayName,
-//         email: result.email,
-//         photoURL: result.photoURL,
-//         uid: result.uid,
-//       })
-//     );
-//   };
-// };
-
-export const startUploadImages = (files: FileList) => {
-  return async (/* dispatch: Dispatch */) => {
-    if (files.length <= 0) throw new Error("$files is empty");
-
-    // dispatch(setSaving());
-
-    console.log("startUploadImages", files);
-
-    for (const file of files) {
-      const formData = new FormData();
-
-      formData.append("media", file);
-      formData.append("type", "image/jpeg");
-
-      try {
-        const userToken = localStorage.getItem("token");
-
-        const resp = await fetch("https://juniorhub.somee.com/api/cloudinary", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-          body: formData,
-        });
-        console.log(resp);
-
-        const data = await resp.json();
-        console.log(data);
-        if (!resp.ok) throw new Error("Couldn't upload image");
-
-        // dispatch(setUploadImages(data.secure_url));
-      } catch (error) {
-        console.error(error);
-      }
-    }
   };
 };
 
@@ -116,10 +72,19 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
       const token = data.token;
       localStorage.setItem("token", token);
 
-      const payload = await verifyToken(token);
-      // console.log(payload);
+      const userRes = await fetch(
+        "https://juniorhub.somee.com/api/freelancers/current",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (!payload) throw new Error("payload don't exist");
+      const payload = await userRes.json();
+      console.log(payload);
 
       dispatch(
         login({
@@ -128,12 +93,13 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
           mediaUrl: payload.mediaUrl,
           name: payload.name,
           technologies: payload.technologies,
-          email: payload.email,
           lastName: payload.lastName,
+          email: payload.email,
+          valorationEnum: payload.valorationEnum,
         })
       );
 
-      // return token;
+      if (!payload) throw new Error("payload don't exist");
     } catch (error) {
       throw new Error("Error en la autenticación: " + error);
     }
@@ -150,27 +116,29 @@ export const startCreatingUserWithEmailPassword = ({
     dispatch(checkingCredentials());
 
     try {
-      const res = await fetch(
+      const resRegister = await fetch(
         "https://juniorhub.somee.com/api/account/register",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password, name, lastName, role: 0 }),
+          body: JSON.stringify({ email, password, name, lastName, role: 1 }),
         }
       );
+
       // const data = await res.json();
 
       // console.log("res:", res);
 
-      if (!res.ok) {
+      if (!resRegister.ok) {
         // console.error("error data:", data);
         return;
       }
       // console.log("well data :", data);
       dispatch(
         login({
+          valorationEnum: 0,
           description: "",
           links: [],
           mediaUrl: "",
@@ -203,7 +171,117 @@ export const startCreatingUserWithEmailPassword = ({
 export const startLogOutUser = () => {
   return async (dispatch: Dispatch) => {
     dispatch(checkingCredentials());
-    await logOutUserFirebase();
+    localStorage.removeItem("token");
+    // await logOutUserFirebase();
     dispatch(logout(""));
+  };
+};
+
+// ** LOGICA
+export const startUploadImages = (files: FileList) => {
+  return async (dispatch: Dispatch) => {
+    if (files.length <= 0) throw new Error("$files is empty");
+
+    // dispatch(setSaving());
+
+    console.log("startUploadImages", files);
+
+    for (const file of files) {
+      const formData = new FormData();
+
+      formData.append("media", file);
+      formData.append("type", "image/jpeg");
+
+      try {
+        const userToken = localStorage.getItem("token");
+
+        const resp = await fetch("https://juniorhub.somee.com/api/cloudinary", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: formData,
+        });
+        // console.log(resp);
+
+        const data = await resp.json();
+        // console.log(data);
+        if (!resp.ok) throw new Error("Couldn't upload image");
+
+        const cloudinaryPUT = await fetch(
+          "https://juniorhub.somee.com/api/freelancers",
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              mediaUrl: data.url,
+            }),
+          }
+        );
+        const dat = await cloudinaryPUT.json();
+        console.log(cloudinaryPUT);
+        console.log(dat);
+
+        dispatch(setUploadImage(data.url));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+};
+
+export const startUpdateProfile = ({
+  email,
+  description,
+  lastName,
+  links,
+  mediaUrl,
+  name,
+  technologies,
+  valorationEnum,
+}: User) => {
+  return async (dispatch: Dispatch) => {
+    // dispatch(savingNewNote());
+
+    try {
+      const userToken = localStorage.getItem("token");
+
+      const res = await fetch("https://juniorhub.somee.com/api/freelancers", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          lastName,
+          mediaUrl,
+          description,
+          links,
+          technologies,
+        }),
+      });
+
+      console.log(res);
+      const { data } = await res.json();
+      console.log(data);
+      dispatch(
+        updateProfile({
+          description,
+          valorationEnum,
+          email,
+          lastName,
+          links,
+          mediaUrl,
+          name,
+          technologies,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 };

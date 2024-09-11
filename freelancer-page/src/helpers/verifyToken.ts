@@ -17,6 +17,8 @@ export const verifyToken = async (
   try {
     const user: JWTPayloadExtend = decodeJwt(token);
 
+    console.log(user);
+
     return user;
   } catch (error) {
     console.error("Token inválido o expirado: " + error);

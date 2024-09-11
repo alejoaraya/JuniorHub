@@ -9,7 +9,7 @@ export interface Offer {
   technology: Technology[];
 }
 export interface Link {
-  id: 0;
+  id: number;
   name: string;
   url: string;
 }
@@ -23,6 +23,7 @@ export interface User {
   lastName: string | null;
   mediaUrl: string | null;
   email: string | null;
+  valorationEnum: number | null;
   description: string | null;
   links: Link[] | null;
   technologies: Technology[] | null;

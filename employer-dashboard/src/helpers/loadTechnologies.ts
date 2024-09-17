@@ -1,7 +1,18 @@
+import { verifyToken } from "./verifyToken";
+
 export const loadTechnologies = async (/* uid: string */) => {
   // const technologies: Technology[] = [];
-  const res = await fetch("https://juniorhub.somee.com/api/technologies");
+  const userToken = verifyToken();
+  const res = await fetch("https://juniorhub.somee.com/api/technologies", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+  // console.log("res", res);
   const { data } = await res.json();
+  // console.log("data", data);
+
   return data;
 
   // if (!uid) throw new Error("UID is undefined");

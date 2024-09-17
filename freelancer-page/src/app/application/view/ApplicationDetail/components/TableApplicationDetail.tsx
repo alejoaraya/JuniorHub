@@ -6,6 +6,8 @@ import {
   TableContainer,
   TableRow,
 } from "@mui/material";
+import { useAppSelector } from "../../../../../hooks/hooks";
+import { getDifficult, getEstimatedTime } from "../../../../../helpers";
 
 // interface TablePaginationActionsProps {
 //   count: number;
@@ -91,13 +93,18 @@ function createData(title: string, description: string) {
   return { title, description };
 }
 
-const rows = [
-  createData("Precio por hora: ", "10"),
-  createData("Tiempo estipulado:", "una semana"),
-  createData("Dificultad:", "media"),
-];
-
 export const TableApplicationDetail = () => {
+  const { offerActive } = useAppSelector((state) => state.offer);
+
+  const rows = [
+    createData("Precio por hora: ", String(offerActive?.price)),
+    createData(
+      "Tiempo estipulado:",
+      getEstimatedTime(offerActive?.estimatedTime)
+    ),
+    createData("Dificultad:", getDifficult(offerActive?.difficult)),
+  ];
+
   // const [page, setPage] = React.useState(0);
   // const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const page = 0;

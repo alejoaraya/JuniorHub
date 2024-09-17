@@ -1,11 +1,21 @@
 import { DeleteOutlined, SaveOutlined } from "@mui/icons-material";
-import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Grid2 as Grid,
+  Rating,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Offer, Technology } from "../../../../@types/types";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { startDeleteNote, startUpdateOffer } from "../../../../store";
+import {
+  startChangeValoration,
+  startDeleteNote,
+  startUpdateOffer,
+} from "../../../../store";
 import {
   DifficultSelectNoteView,
   MultipleSelectChipNoteView,
@@ -18,36 +28,56 @@ import {
 export const NoteView = () => {
   const { offerActive } = useAppSelector((state) => state.offer);
   const dispatch = useAppDispatch();
+  // console.log(offerActive?.applied);
+
+  if (
+    offerActive?.applied &&
+    offerActive?.applied.length > 0 &&
+    offerActive?.applied[0].selected
+  ) {
+    console.table(offerActive?.applied[0].selected);
+  }
   // const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initialValues: Offer = {
+    id: offerActive?.id || 0,
     title: offerActive?.title || "",
     description: offerActive?.description || "",
     price: offerActive?.price || 0,
     estimatedTime: offerActive?.estimatedTime || 0,
     state: offerActive?.state || 0,
     difficult: offerActive?.difficult || 0,
-    technology: offerActive?.technology || [],
+    technologies: offerActive?.technologies || [],
+    applied: offerActive?.applied || [],
   };
+
+  const [valoration, setValoration] = useState<number>(0);
 
   const { handleChange, values, setValues } = useFormik({
     initialValues,
     onSubmit: () => {},
   });
 
+  const handleValoration = (newValoration: number) => {
+    dispatch(startChangeValoration(newValoration));
+    setValoration(newValoration || 0);
+  };
+
   const onSaveOffer = () => {
     values.price = Number(values.price);
     // console.table(values);
 
     Swal.fire({
-      title: "Do you want to SAVE?",
+      title: "¿Seguro que quieres guardarlo?",
       icon: "question",
       showConfirmButton: true,
       showCancelButton: true,
-      confirmButtonText: "Save",
+      confirmButtonText: "Guardar",
       cancelButtonText: "Cancel",
     }).then((value) => {
       if (value.value) {
+        // console.log(values);
+
         dispatch(startUpdateOffer(values));
       }
     });
@@ -70,17 +100,17 @@ export const NoteView = () => {
 
     // console.log(result);
 
-    values.technology = result;
+    values.technologies = result;
   };
 
   const onDeleteNote = () => {
     Swal.fire({
-      title: "Do you want to DELETE?",
+      title: "¿Seguro que quieres eliminarlo?",
 
       icon: "error",
       showConfirmButton: true,
       showCancelButton: true,
-      confirmButtonText: "Delete",
+      confirmButtonText: "Eliminar",
       cancelButtonText: "Cancel",
     }).then((value) => {
       if (value.value) {
@@ -106,6 +136,8 @@ export const NoteView = () => {
   //   if (!target.files) throw new Error("$Files is empty");
   //   dispatch(startUploadImages(target.files));
   // };
+
+  console.log(offerActive);
 
   return (
     <Grid
@@ -192,16 +224,43 @@ export const NoteView = () => {
         />
         <MultipleSelectChipNoteView
           onChangeTechnologies={onChangeTechnologies}
-          technologiesSelected={offerActive?.technology.map(
-            (tech) => tech.name
-          )}
+          technologiesSelected={
+            offerActive?.technologies.map((tech) => tech.name) || []
+          }
         />
       </Grid>
       {/* <StandardImageList /> */}
 
-      <Grid container width={"100%"}>
-        <TableNoteView />
-      </Grid>
+      {offerActive?.applied &&
+      offerActive?.applied.length > 0 &&
+      offerActive?.applied[0].selected ? (
+        <Grid
+          bgcolor={"secondary.main"}
+          padding={5}
+          color={"white"}
+          marginBottom={10}
+          width={"100%"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          container
+        >
+          <Typography variant='h5' fontWeight={"bold"}>
+            Freelancer seleccionado: {offerActive?.applied[0].freelancerName}
+          </Typography>
+
+          <Rating
+            name='simple-controlled'
+            value={valoration}
+            onChange={(_event, newValoration) => {
+              handleValoration(newValoration || 0);
+            }}
+          />
+        </Grid>
+      ) : (
+        <Grid container width={"100%"} mb={10}>
+          <TableNoteView />
+        </Grid>
+      )}
     </Grid>
   );
 };

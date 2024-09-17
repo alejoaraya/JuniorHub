@@ -77,22 +77,28 @@ export const Profile = () => {
           ))}
         </Grid>
         <Grid container gap={1} flexDirection={"column"}>
-          {links.map((link) => (
-            <Grid
-              key={link.id}
-              container
-              // display={`${!links[0] && "none"}`}
-              gap={1}
-              alignItems={"center"}
-            >
-              {link.id === 1 && <GitHub />}
-              {link.id === 2 && <LinkedIn />}
-              {link.id === 3 && <LanguageOutlined />}
-              <Link color='secondary' to={`${link.url}`} component={LinkRouter}>
-                {link.name}
-              </Link>
-            </Grid>
-          ))}
+          {links
+            .filter((link) => link.url !== "")
+            .map((link) => (
+              <Grid
+                key={link.id}
+                container
+                // display={`${!links[0] && "none"}`}
+                gap={1}
+                alignItems={"center"}
+              >
+                {link.name === "GitHub" && <GitHub />}
+                {link.name === "LinkedIn" && <LinkedIn />}
+                {link.name === "Portafolio" && <LanguageOutlined />}
+                <Link
+                  color='secondary'
+                  to={`${link.url}`}
+                  component={LinkRouter}
+                >
+                  {link.name}
+                </Link>
+              </Grid>
+            ))}
 
           <Grid container gap={1} alignItems={"center"}>
             <MailOutline />

@@ -7,9 +7,13 @@ import {
   deleteNoteById,
   savingNewNote,
   setActiveNote,
+  setOffers,
   // setUploadImages,
   udpateNote,
 } from "./offerSlice";
+import { loadOffers } from "../../../helpers/loadOffers";
+import Swal from "sweetalert2";
+import { verifyToken } from "../../../helpers/verifyToken";
 
 export const startCreationOffer = () => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
@@ -26,7 +30,7 @@ export const startCreationOffer = () => {
       estimatedTime: 0,
       state: 0,
       difficult: 0,
-      technology: [],
+      technologies: [],
     };
 
     // const newDoc = await doc(collection(FirebaseDB, `${uid}/offer/notes/`));
@@ -57,7 +61,7 @@ export const startUpdateNote = ({
   estimatedTime,
   state,
   difficult,
-  technology,
+  technologies: technology,
 }: Offer) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(savingNewNote());
@@ -89,7 +93,7 @@ export const startUpdateNote = ({
         estimatedTime: estimatedTime || noteActive.estimatedTime,
         state: state || noteActive.state,
         difficult: difficult || noteActive.difficult,
-        technology: technology || noteActive.technology,
+        technologies: technology || noteActive.technologies,
       })
     );
   };
@@ -140,3 +144,63 @@ export const startDeleteNote = () => {
 //     }
 //   };
 // };
+
+export const startLoadingOffers = () => {
+  return async (dispatch: Dispatch) => {
+    const res = await loadOffers();
+
+    dispatch(setOffers(res));
+  };
+};
+export const startApplyOffer = () => {
+  return async (_dispatch: Dispatch, getState: () => RootState) => {
+    const { offerActive } = getState().offer;
+
+    try {
+      const token = verifyToken();
+
+      const res = await fetch("https://juniorhub.somee.com/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ offerId: offerActive?.id }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      Swal.fire("La postulacion fue exitosa !", "", "success");
+
+      // dispatch(app)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      Swal.fire("Ya te has postulado a esta oferta", "", "error");
+    }
+    // const res = await loadOffers();
+
+    // dispatch(setOffers(res));
+  };
+};
+
+export const startSavingActiveOffer = (application: Offer) => {
+  return async (dispatch: Dispatch) => {
+    const token = verifyToken();
+    const res = await fetch(
+      `https://juniorhub.somee.com/api/offers/${application.id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // console.log("res", res);
+    const data = await res.json();
+    console.log("data", data);
+
+    // return data.offers;
+
+    dispatch(setActiveNote(data));
+  };
+};

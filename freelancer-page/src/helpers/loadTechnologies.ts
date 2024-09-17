@@ -1,10 +1,11 @@
 import { Technology } from "../@types/types";
+import { verifyToken } from "./verifyToken";
 
 export const loadTechnologies = async (/* uid: string */): Promise<
   Technology[]
 > => {
   // const technologies: Technology[] = [];
-  const userToken = localStorage.getItem("token");
+  const userToken = verifyToken();
   const res = await fetch("https://juniorhub.somee.com/api/technologies", {
     method: "GET",
     headers: {

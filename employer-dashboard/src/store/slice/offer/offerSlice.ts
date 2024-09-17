@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Offer, Technology } from "../../../@types/types";
+import { Applied, Offer, Technology } from "../../../@types/types";
 
 interface offerState {
   isSaving: boolean;
@@ -41,14 +41,17 @@ export const offerSlice = createSlice({
     setTechnologies: (state, action: PayloadAction<Technology[]>) => {
       state.technologies = action.payload;
     },
+    setOffers: (state, action: PayloadAction<Offer[]>) => {
+      state.offers = action.payload;
+    },
     updatedNotes: (state, action: PayloadAction<Offer[]>) => {
       state.offers = action.payload;
     },
     udpateNote: (state, action: PayloadAction<Offer>) => {
       state.offerActive = action.payload;
-      state.offers = state.offers.map((note) => {
-        if (note.id === action.payload.id) return action.payload;
-        return note;
+      state.offers = state.offers.map((offer) => {
+        if (offer.id === action.payload.id) return action.payload;
+        return offer;
       });
       state.isSaving = false;
     },
@@ -57,10 +60,24 @@ export const offerSlice = createSlice({
       state.offerActive = null;
       state.isSaving = false;
     },
-    // setUploadImages: (state, action: PayloadAction<number>) => {
-    //   state.noteActive?.imageURLs?.push(action.payload);
-    //   state.isSaving = false;
-    // },
+    setAppliedFreelancers: (state, action: PayloadAction<Applied[]>) => {
+      if (state.offerActive) {
+        state.offerActive.applied = action.payload;
+        state.isSaving = false;
+      }
+    },
+    selectAFreelancer: (state, action: PayloadAction<Applied[]>) => {
+      if (state.offerActive) {
+        state.offerActive.applied = action.payload;
+        state.isSaving = false;
+      }
+    },
+    changeValoration: (state, action: PayloadAction<number>) => {
+      if (state.offerActive) {
+        state.offerActive.applied[0].valoration = action.payload;
+        state.isSaving = false;
+      }
+    },
   },
 });
 
@@ -73,5 +90,8 @@ export const {
   deleteNoteById,
   savingNewNote,
   setTechnologies,
-  // setUploadImages,
+  setOffers,
+  setAppliedFreelancers,
+  selectAFreelancer,
+  changeValoration,
 } = offerSlice.actions;

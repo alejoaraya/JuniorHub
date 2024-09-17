@@ -1,12 +1,12 @@
 import { TurnedInNot } from "@mui/icons-material";
 import {
+  Grid2 as Grid,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Grid2 as Grid,
 } from "@mui/material";
-import { setActiveNote } from "../../../store";
+import { startSavingActiveOffer } from "../../../store";
 
 import { useMemo } from "react";
 import { Offer } from "../../../@types/types";
@@ -20,7 +20,7 @@ export const ApplicationItem = ({ application }: Props) => {
   const dispatch = useAppDispatch();
 
   const onActiveNote = () => {
-    dispatch(setActiveNote(application));
+    dispatch(startSavingActiveOffer(application));
   };
 
   const fixTitle = useMemo(() => {
@@ -38,7 +38,11 @@ export const ApplicationItem = ({ application }: Props) => {
         <Grid container>
           <ListItemText
             primary={fixTitle}
-            secondary={application.technology[0].name}
+            secondary={`${
+              application.technologies[0]
+                ? application.technologies[0].name
+                : ""
+            }`}
           />
         </Grid>
       </ListItemButton>

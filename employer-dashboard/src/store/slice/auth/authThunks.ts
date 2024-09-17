@@ -1,6 +1,14 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { verifyToken } from "../../../helpers";
-import { checkingCredentials, login, logout } from "./authSlice";
+import {
+  checkingCredentials,
+  login,
+  logout,
+  setUploadImage,
+  updateProfile,
+} from "./authSlice";
+import { User } from "../../../@types/types";
+import { getInfoUser } from "../../../helpers/getInfoUser";
 
 // export const checkingAuthentication = ({ email = "", password = "" }) => {
 //   return async (dispatch: Dispatch) => {
@@ -34,22 +42,36 @@ export const startLogin = () => {
   return async (dispatch: Dispatch /* getState: () => RootState */) => {
     // const { uid } = getState().auth;
     // if (!uid) throw new Error("UID is undefined");
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    try {
+      const token = verifyToken();
 
-    const payload = await verifyToken(token);
-    if (!payload) throw new Error("payload don't exist");
-    // console.log(payload);
+      const res = await fetch(
+        "https://juniorhub.somee.com/api/employer/current",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    dispatch(
-      login({
-        uid: "",
-        photoURL: "",
-        email: payload.email,
-        firstName: payload.name,
-        lastName: payload.lastName,
-      })
-    );
+      const payload = await res.json();
+      console.log(payload);
+
+      dispatch(
+        login({
+          offers: payload.offers,
+          mediaUrl: payload.mediaUrl,
+          email: payload.email,
+          valorationEnum: payload.valorationEnum,
+          name: payload.name,
+          lastName: payload.lastName,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -68,20 +90,35 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error("Error en la autenticación");
+        dispatch(logout(data));
+
+        // throw new Error("Error en la autenticación");
       }
       const token = data.token;
       localStorage.setItem("token", token);
 
-      const payload = await verifyToken(token);
+      const user = await fetch(
+        "https://juniorhub.somee.com/api/employer/current",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const payload = await user.json();
+      console.log(payload);
       if (!payload) throw new Error("payload don't exist");
 
       dispatch(
         login({
-          uid: "",
-          photoURL: "",
+          offers: payload.offers,
+          valorationEnum: payload.valorationEnum,
+          mediaUrl: payload.mediaUrl,
           email: payload.email,
-          firstName: payload.name,
+          name: payload.name,
           lastName: payload.lastName,
         })
       );
@@ -105,9 +142,8 @@ export const startCreatingUserWithEmailPassword = ({
   lastName = "",
 }) => {
   return async (dispatch: Dispatch) => {
-    dispatch(checkingCredentials());
-
     try {
+      dispatch(checkingCredentials());
       const res = await fetch(
         "https://juniorhub.somee.com/api/account/register",
         {
@@ -120,39 +156,27 @@ export const startCreatingUserWithEmailPassword = ({
       );
       // const data = await res.json();
 
-      console.log("res:", res);
+      // console.log("res:", res);
+      // console.log("res:", await res.json());
 
-      if (!res.ok) {
-        // console.error("error data:", data);
-        return;
-      }
+      if (!res.ok) throw new Error();
+
+      // const payload = await getInfoUser(token)
+
       // console.log("well data :", data);
       dispatch(
         login({
-          uid: "",
-          photoURL: "",
+          mediaUrl: "",
+          offers: [],
+          valorationEnum: 0,
           email,
-          firstName: name,
+          name,
           lastName,
         })
       );
     } catch (error) {
       console.log(error);
     }
-
-    //TODO: if (!ok) return dispatch(logout(data));
-
-    //* **CHECK IT**
-    //* const res = await registerUserWithEmailAndPassword({
-    //*   email,
-    //*   password,
-    //*   displayName,
-    //* });
-
-    //* if (!res || res.errorMessage === undefined)
-    //*   throw new Error("variables of $res are empties");
-
-    //* const { photoURL, uid, ok, errorMessage } = res;
   };
 };
 
@@ -162,5 +186,118 @@ export const startLogOutUser = () => {
 
     localStorage.removeItem("token");
     dispatch(logout(""));
+  };
+};
+
+export const startUpdateProfile = ({
+  email,
+  lastName,
+  mediaUrl,
+  name,
+}: User) => {
+  return async (dispatch: Dispatch) => {
+    // dispatch(savingNewNote());
+
+    try {
+      const token = verifyToken();
+      if (!token) throw new Error();
+
+      const newProfile = {
+        name,
+        lastName,
+        email,
+        mediaUrl,
+      };
+
+      // console.log(newProfile);
+
+      const res = await fetch("https://juniorhub.somee.com/api/employer", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProfile),
+      });
+
+      if (!res.ok) throw new Error();
+
+      dispatch(
+        updateProfile({
+          email,
+          lastName,
+          mediaUrl,
+          name,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const startUploadImages = (files: FileList) => {
+  return async (dispatch: Dispatch) => {
+    if (files.length <= 0) throw new Error("$files is empty");
+
+    // dispatch(setSaving());
+
+    // console.log("startUploadImages", files);
+
+    for (const file of files) {
+      const formData = new FormData();
+
+      formData.append("media", file);
+      formData.append("type", "image/jpeg");
+
+      try {
+        const token = verifyToken();
+        if (!token) return;
+
+        const resp = await fetch("https://juniorhub.somee.com/api/cloudinary", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        // console.log(resp);
+
+        const data = await resp.json();
+        // console.log(data);
+        if (!resp.ok) throw new Error("Couldn't upload image");
+
+        const payload = await getInfoUser(token);
+
+        const newProfile = {
+          mediaUrl: data.url,
+          email: payload.email,
+          name: payload.name,
+          lastName: payload.lastName,
+        };
+        // payload.mediaUrl = data.url;
+
+        // console.log(payload);
+
+        const cloudinaryPUT = await fetch(
+          "https://juniorhub.somee.com/api/employer",
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newProfile),
+          }
+        );
+        const dat = await cloudinaryPUT.json();
+        // console.log(cloudinaryPUT);
+        console.log(dat);
+
+        dispatch(setUploadImage(data.url));
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
 };

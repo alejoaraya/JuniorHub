@@ -6,10 +6,13 @@ export interface Offer {
   estimatedTime: number;
   state: number;
   difficult: number;
-  technology: Technology[];
+  technologies: Technology[];
+  fullNameAuthor?: string;
+  userId?: number;
 }
+
 export interface Link {
-  id: number;
+  id?: number;
   name: string;
   url: string;
 }

@@ -6,28 +6,34 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { setActiveNote } from "../../../store";
+import { startSetActiveOffer } from "../../../store";
 
 import { useMemo } from "react";
 import { Offer } from "../../../@types/types";
 import { useAppDispatch } from "../../../hooks/hooks";
 
 interface Props {
-  note: Offer;
+  offer: Offer;
 }
 
-export const SideBarItem = ({ note }: Props) => {
+export const SideBarItem = ({ offer }: Props) => {
   const dispatch = useAppDispatch();
 
   const onActiveNote = () => {
-    dispatch(setActiveNote(note));
+    dispatch(startSetActiveOffer(offer));
   };
 
   const fixTitle = useMemo(() => {
-    return note.title.length > 17
-      ? note.title.substring(0, 17) + "..."
-      : note.title;
-  }, [note.title]);
+    return offer.title.length > 17
+      ? offer.title.substring(0, 17) + "..."
+      : offer.title;
+  }, [offer.title]);
+
+  const fixDescription = useMemo(() => {
+    return offer.description.length > 22
+      ? offer.description.substring(0, 22) + "..."
+      : offer.description;
+  }, [offer.description]);
 
   return (
     <ListItem onClick={onActiveNote} disablePadding>
@@ -37,7 +43,7 @@ export const SideBarItem = ({ note }: Props) => {
         </ListItemIcon>
         <Grid container display={"flex"} flexDirection={"column"}>
           <ListItemText primary={fixTitle} />
-          <ListItemText secondary={note.description} />
+          <ListItemText secondary={fixDescription} />
         </Grid>
       </ListItemButton>
     </ListItem>

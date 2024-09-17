@@ -2,6 +2,7 @@ import { LogoutOutlined, MenuOutlined } from "@mui/icons-material";
 import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/hooks";
 import { startLogOutUser } from "../../../store/slice/auth/authThunks";
+import { useNavigate } from "react-router";
 
 interface Props {
   drawerWidth: number;
@@ -9,6 +10,7 @@ interface Props {
 
 export const NavBar = ({ drawerWidth = 240 }: Props) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onLogOut = () => {
     dispatch(startLogOutUser());
@@ -39,7 +41,12 @@ export const NavBar = ({ drawerWidth = 240 }: Props) => {
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <Typography variant='h6' color={"text.secondary"}>
+          <Typography
+            onClick={() => navigate("/")}
+            sx={{ cursor: "pointer" }}
+            variant='h6'
+            color={"text.secondary"}
+          >
             JuniorHub
           </Typography>
           <IconButton onClick={onLogOut} color='secondary'>

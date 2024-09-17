@@ -2,6 +2,7 @@ import { LogoutOutlined } from "@mui/icons-material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
+import { Avatar } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -11,13 +12,12 @@ import MenuItem from "@mui/material/MenuItem";
 import { alpha, styled } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useFormik } from "formik";
 import * as React from "react";
 import { useNavigate } from "react-router";
-import { startLogOutUser } from "../../../store";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { useFormik } from "formik";
-import { setQuerySearch } from "../../../store/slice/ui/uiSlice";
-import { Avatar } from "@mui/material";
+import { startLogOutUser } from "../../../store";
+import { startSearchingGetAll } from "../../../store/slice/ui/uiThunks";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -84,7 +84,7 @@ export const Navbar = () => {
     },
     onSubmit: (values: { querySearch: string }) => {
       navigate("/");
-      dispatch(setQuerySearch(values.querySearch));
+      dispatch(startSearchingGetAll(values.querySearch));
     },
   });
 
@@ -199,10 +199,11 @@ export const Navbar = () => {
             <MenuIcon />
           </IconButton> */}
           <Typography
+            onClick={() => navigate("/")}
             variant='h6'
             noWrap
             component='div'
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "block" }, cursor: "pointer" }}
           >
             JuniorHub
           </Typography>

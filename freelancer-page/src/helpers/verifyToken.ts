@@ -1,25 +1,10 @@
-import { decodeJwt, JWTPayload } from "jose";
-import { Link, Technology } from "../@types/types";
-
-interface JWTPayloadExtend extends JWTPayload {
-  email: string;
-  name: string;
-  lastName: string;
-  description: string;
-  links: Link[];
-  mediaUrl: string;
-  technologies: Technology[];
-}
-
-export const verifyToken = async (
-  token: string
-): Promise<JWTPayloadExtend | null> => {
+export const verifyToken = () => {
   try {
-    const user: JWTPayloadExtend = decodeJwt(token);
+    const token = localStorage.getItem("token");
+    if (token == null) throw new Error();
+    // console.log(token);
 
-    console.log(user);
-
-    return user;
+    return token;
   } catch (error) {
     console.error("Token inválido o expirado: " + error);
     return null;

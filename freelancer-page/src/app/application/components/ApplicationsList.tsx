@@ -5,15 +5,16 @@ import { ApplicationItem } from "./ApplicationItem";
 
 export const ApplicationsList = () => {
   const { querySearch } = useAppSelector((state) => state.ui);
+  const { offers } = useAppSelector((state) => state.offer);
 
-  const filterApplications = applicationDemo.filter((app) => {
-    const searchQuery = querySearch.trim().toLocaleLowerCase();
+  // const filterApplications = offers.filter((app) => {
+  //   const searchQuery = querySearch.trim().toLocaleLowerCase();
 
-    return (
-      app.title.toLocaleLowerCase().includes(searchQuery) ||
-      app.technology[0].name.toLocaleLowerCase().includes(searchQuery)
-    );
-  });
+  //   return (
+  //     app.title.toLocaleLowerCase().includes(searchQuery) ||
+  //     app.technologies[0].name.toLocaleLowerCase().includes(searchQuery)
+  //   );
+  // });
 
   return (
     <Box
@@ -31,12 +32,16 @@ export const ApplicationsList = () => {
           <Box bgcolor={"primary.main"} paddingX={2} paddingY={1}>
             <Typography variant='h6'>{querySearch || "Todos"}</Typography>
             <Typography variant='subtitle2'>
-              {filterApplications.length} resultados
+              {offers.length} resultados
             </Typography>
           </Box>
-          {filterApplications.map((application: Offer) => (
-            <ApplicationItem key={application.id} application={application} />
-          ))}
+          {Array.isArray(offers) ? (
+            offers.map((application: Offer) => (
+              <ApplicationItem key={application.id} application={application} />
+            ))
+          ) : (
+            <Typography>No offers available</Typography>
+          )}
         </Box>
       </List>
       <Box display={"flex"} justifyContent={"center"} my={2}>
@@ -45,89 +50,3 @@ export const ApplicationsList = () => {
     </Box>
   );
 };
-
-const applicationDemo: Offer[] = [
-  {
-    id: 1,
-    title: "Front-end developer",
-    description: "No Country SRL.",
-    price: 2,
-    estimatedTime: 2,
-    state: 2,
-    difficult: 2,
-    technology: [
-      {
-        id: 0,
-        name: "React",
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Back-end developer",
-    description: "No Country SRL.",
-    price: 2,
-    estimatedTime: 2,
-    state: 2,
-    difficult: 2,
-    technology: [
-      {
-        id: 0,
-        name: "React",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Fullstack developer",
-    description: "No Country SRL.",
-    price: 2,
-    estimatedTime: 2,
-    state: 2,
-    difficult: 2,
-    technology: [
-      {
-        id: 0,
-        name: "Java",
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: "Design",
-    description: "No Country SRL.",
-    price: 2,
-    estimatedTime: 2,
-    state: 2,
-    difficult: 2,
-    technology: [
-      {
-        id: 0,
-        name: "Figma",
-      },
-    ],
-  },
-  {
-    id: 5,
-    title: "QA",
-    description: "No Country SRL.",
-    price: 2,
-    estimatedTime: 2,
-    state: 2,
-    difficult: 2,
-    technology: [
-      {
-        id: 0,
-        name: "React",
-      },
-      {
-        id: 0,
-        name: "ASD",
-      },
-      {
-        id: 0,
-        name: "cDct",
-      },
-    ],
-  },
-];

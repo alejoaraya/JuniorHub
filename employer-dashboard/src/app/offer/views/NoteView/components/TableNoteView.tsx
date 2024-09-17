@@ -1,13 +1,10 @@
 import { FilterListOutlined } from "@mui/icons-material";
 import {
   Avatar,
+  Box,
   Button,
   Divider,
   IconButton,
-  Toolbar,
-  Tooltip,
-  Typography,
-  Box,
   Paper,
   Table,
   TableBody,
@@ -16,55 +13,38 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Toolbar,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import { ChangeEvent, useMemo, useState } from "react";
+import { Applied } from "../../../../../@types/types";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
+import { startSelectFreelancer } from "../../../../../store";
 
 interface Data {
   id: number;
   userName: string;
-  mainRol: string;
   technologies: string;
-  showPorfile: string;
+  date: string;
+  freelancer: Applied;
 }
 
 function createData(
   id: number,
   userName: string,
-  mainRol: string,
   technologies: string,
-  showPorfile: string
+  date: string,
+  freelancer: Applied
 ): Data {
   return {
     id,
     userName,
-    mainRol,
     technologies,
-    showPorfile,
+    date,
+    freelancer,
   };
 }
-
-const rows = [
-  createData(1, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(2, "Juan Perez", "Back-end", "C#", "https/..."),
-  createData(3, "Juan Perez", "Back-end", "Python", "https/..."),
-  createData(4, "Juan Perez", "Back-end", "Node", "https/..."),
-  createData(5, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(6, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(7, "Juan Perez", "Back-end", "C#", "https/..."),
-  createData(8, "Juan Perez", "Back-end", "Python", "https/..."),
-  createData(9, "Juan Perez", "Back-end", "Node", "https/..."),
-  createData(10, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(11, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(12, "Juan Perez", "Back-end", "C#", "https/..."),
-  createData(13, "Juan Perez", "Back-end", "Python", "https/..."),
-  createData(14, "Juan Perez", "Back-end", "Node", "https/..."),
-  createData(15, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(16, "Juan Perez", "Back-end", "Java", "https/..."),
-  createData(17, "Juan Perez", "Back-end", "C#", "https/..."),
-  createData(18, "Juan Perez", "Back-end", "Python", "https/..."),
-  createData(19, "Juan Perez", "Back-end", "Node", "https/..."),
-  createData(20, "Juan Perez", "Back-end", "Java", "https/..."),
-];
 
 interface HeadCell {
   label: string;
@@ -75,10 +55,10 @@ const headCells: readonly HeadCell[] = [
     label: "User",
   },
   {
-    label: "Main Rol",
+    label: "Technologies",
   },
   {
-    label: "Technologies",
+    label: "Date",
   },
   {
     label: "Actions",
@@ -102,7 +82,45 @@ function EnhancedTableHead() {
     </TableHead>
   );
 }
+
 export const TableNoteView = () => {
+  const { offerActive } = useAppSelector((state) => state.offer);
+  const dispatch = useAppDispatch();
+  // console.log(offerActive?.applied);
+
+  const selectFreelancer = (freelancer: Applied) => {
+    dispatch(startSelectFreelancer(offerActive?.id || 0, freelancer));
+  };
+
+  const rows: Data[] = useMemo(() => {
+    return (
+      offerActive?.applied.map((freelancer) =>
+        createData(
+          freelancer.id,
+          freelancer.freelancerName,
+          freelancer.technologies[0]?.name || "",
+          freelancer.applicationDate,
+          freelancer
+        )
+      ) || []
+    );
+  }, [offerActive?.applied]);
+
+  // const rows: Data[] =
+  //   offerActive?.applied.map((freelancer) =>
+  //     createData(
+  //       freelancer.id,
+  //       freelancer.freelancerName,
+  //       freelancer.technologies[0]?.name || "",
+  //       freelancer.applicationDate
+  //     )
+  //   ) || [];
+
+  // useEffect(() => {
+  //   getRows(applied);
+  // }, [offerActive]);
+
+  // console.log("ROWS", rows);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -120,7 +138,7 @@ export const TableNoteView = () => {
 
   const visibleRows = useMemo(
     () => [...rows].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [page, rowsPerPage]
+    [page, rowsPerPage, rows]
   );
 
   return (
@@ -164,15 +182,17 @@ export const TableNoteView = () => {
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell>
-                      <Avatar>H</Avatar>
+                      <Avatar>{row.userName.substring(0, 1)}</Avatar>
                     </TableCell>
                     <TableCell component='th' scope='row' padding='none'>
                       {row.userName}
                     </TableCell>
-                    <TableCell>{row.mainRol}</TableCell>
                     <TableCell>{row.technologies}</TableCell>
+                    <TableCell>{row.date}</TableCell>
                     <TableCell align='right'>
-                      <Button>See profile</Button>
+                      <Button onClick={() => selectFreelancer(row.freelancer)}>
+                        Select freelancer
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

@@ -1,23 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { User } from "../../../@types/types";
 
-interface AuthState {
+interface AuthState extends User {
   status?: "checking" | "not-authenticated" | "autenticated";
-  uid: string | null | undefined;
-  firstName: string | null | undefined;
-  lastName: string | null | undefined;
-  email: string | null | undefined;
-  photoURL: string | null | undefined;
   errorMessage?: string | null | undefined;
 }
 
 const initialState: AuthState = {
   status: "not-authenticated",
-  uid: "",
-  firstName: "",
+  offers: [],
+  mediaUrl: "",
+  valorationEnum: 0,
+  name: "",
   lastName: "",
   email: "",
-  photoURL: "",
   errorMessage: "",
 };
 
@@ -27,26 +24,43 @@ export const authSlice = createSlice({
   reducers: {
     login: (state, action: PayloadAction<AuthState>) => {
       state.status = "autenticated";
-      state.uid = action.payload.uid;
-      state.firstName = action.payload.firstName;
+      state.offers = action.payload.offers;
+      state.name = action.payload.name;
       state.lastName = action.payload.lastName;
       state.email = action.payload.email;
-      state.photoURL = action.payload.photoURL;
+      state.valorationEnum = action.payload.valorationEnum;
+      state.mediaUrl = action.payload.mediaUrl;
       state.errorMessage = null;
+    },
+    updateProfile: (state, action: PayloadAction<User>) => {
+      state.name = action.payload.name;
+      state.lastName = action.payload.lastName;
+      state.email = action.payload.email;
+      state.mediaUrl = action.payload.mediaUrl;
     },
     logout: (state, action: PayloadAction<string>) => {
       state.status = "not-authenticated";
-      state.uid = null;
-      state.firstName = null;
+      state.offers = null;
+      state.name = null;
       state.lastName = null;
       state.email = null;
-      state.photoURL = null;
+      state.valorationEnum = null;
+      state.mediaUrl = null;
       state.errorMessage = action.payload;
     },
     checkingCredentials: (state) => {
       state.status = "checking";
     },
+    setUploadImage: (state, action: PayloadAction<string>) => {
+      state.mediaUrl = action.payload;
+    },
   },
 });
 
-export const { login, logout, checkingCredentials } = authSlice.actions;
+export const {
+  login,
+  logout,
+  checkingCredentials,
+  updateProfile,
+  setUploadImage,
+} = authSlice.actions;

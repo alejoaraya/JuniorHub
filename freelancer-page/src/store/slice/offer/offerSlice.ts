@@ -52,6 +52,9 @@ export const offerSlice = createSlice({
       state.offerActive = null;
       state.isSaving = false;
     },
+    setOffers: (state, action: PayloadAction<Offer[]>) => {
+      state.offers = action.payload;
+    },
     // setUploadImages: (state, action: PayloadAction<number>) => {
     //   state.noteActive?.imageURLs?.push(action.payload);
     //   state.isSaving = false;
@@ -67,5 +70,5 @@ export const {
   udpateNote,
   deleteNoteById,
   savingNewNote,
-  // setUploadImages,
+  setOffers,
 } = offerSlice.actions;

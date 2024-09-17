@@ -1,14 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
-import { startLogin } from "../store";
+import { startLoadingOffers, startLogin } from "../store";
 import { useAppDispatch, useAppSelector } from "./hooks";
+import { verifyToken } from "../helpers/verifyToken";
 
 export const useCheckAuth = () => {
   const dispatch = useAppDispatch();
   const { status } = useAppSelector((state) => state.auth);
+  const token = verifyToken();
 
   useEffect(() => {
-    // dispatch(startLoadingTechnologies());
+    if (token) {
+      dispatch(startLoadingOffers());
+    }
     dispatch(startLogin());
 
     // onAuthStateChanged(FirebaseAuth, async (user) => {

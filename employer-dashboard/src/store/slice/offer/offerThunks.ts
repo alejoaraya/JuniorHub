@@ -258,7 +258,7 @@ export const startSetActiveOffer = (application: Offer) => {
         ...application,
         applied: data,
       };
-      console.log("activeOffer", activeOffer);
+      // console.log("activeOffer", activeOffer);
 
       // console.log("data", data);
 
@@ -286,9 +286,11 @@ export const startSelectFreelancer = (offerId: number, freelancer: Applied) => {
           },
         }
       );
-      console.log("res", res);
-      const data = await res.json();
-      console.log("data", data);
+
+      if (!res.ok) throw new Error();
+      // console.log("res", res);
+      // const data = await res.json();
+      // console.log("data", data);
       // return data.offers;
       // const activeOffer: Offer = {
       //   ...application,
@@ -301,13 +303,9 @@ export const startSelectFreelancer = (offerId: number, freelancer: Applied) => {
       selectAFreelancer(freelancerSelected);
       Swal.fire("La seleccion del freelancer fue exitosa", "", "success");
 
-      // console.log("activeOffer", activeOffer);
-      // console.log("data", data);
-      // application.applied = data;
-      // dispatch(setActiveNote(activeOffer));
-      // dispatch(setAppliedFreelancers(data));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log(error);
+      Swal.fire("Hubo un error al seleccionar al freelancer", "", "error");
     }
   };
 };
@@ -339,9 +337,9 @@ export const startChangeValoration = (newValoration: number) => {
       );
 
       if (!res.ok) throw new Error();
-      console.log("res", res);
+      // console.log("res", res);
       const { data } = await res.json();
-      console.log("data", data);
+      // console.log("data", data);
 
       dispatch(changeValoration(data.valorationValue));
       Swal.fire("La valoracion fue exitosa !", "", "success");

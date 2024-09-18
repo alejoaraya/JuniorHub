@@ -26,7 +26,7 @@ export const startLogin = () => {
       // console.log(payload);
 
       const payload = await getInfoUser(token);
-      console.log(payload);
+      // console.log(payload);
 
       dispatch(
         login({
@@ -84,7 +84,7 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
       );
 
       const payload = await userRes.json();
-      console.log(payload);
+      // console.log(payload);
       if (!payload) throw new Error("payload don't exist");
 
       dispatch(
@@ -138,7 +138,7 @@ export const startCreatingUserWithEmailPassword = ({
 
       // const data = await res.json();
 
-      console.log("res:", res);
+      // console.log("res:", res);
 
       if (!res.ok) {
         // console.error("error data:", data);
@@ -193,7 +193,7 @@ export const startUploadImages = (files: FileList) => {
 
     // dispatch(setSaving());
 
-    console.log("startUploadImages", files);
+    // console.log("startUploadImages", files);
 
     for (const file of files) {
       const formData = new FormData();
@@ -222,22 +222,19 @@ export const startUploadImages = (files: FileList) => {
 
         payload.mediaUrl = data.url;
 
-        console.log(payload);
+        // console.log(payload);
 
-        const cloudinaryPUT = await fetch(
-          "https://juniorhub.somee.com/api/freelancers",
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-        const dat = await cloudinaryPUT.json();
+        await fetch("https://juniorhub.somee.com/api/freelancers", {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        // const dat = await cloudinaryPUT.json();
         // console.log(cloudinaryPUT);
-        console.log(dat);
+        // console.log(dat);
 
         dispatch(setUploadImage(data.url));
         Swal.fire("La imagen se a guardado", "", "success");

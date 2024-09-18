@@ -1,7 +1,7 @@
 export const verifyToken = () => {
   try {
     const token = localStorage.getItem("token");
-    if (token == null) throw new Error();
+    // if (token == null) throw new Error();
     // console.log(token);
 
     return token;

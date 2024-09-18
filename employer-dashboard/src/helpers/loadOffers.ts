@@ -16,7 +16,7 @@ export const loadOffers = async (/* uid: string */) => {
     );
     // console.log("res", res);
     const data = await res.json();
-    console.log("data", data.offers);
+    // console.log("data", data.offers);
 
     return data.offers || [];
   } catch (error) {

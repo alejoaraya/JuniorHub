@@ -11,9 +11,9 @@ export const useCheckAuth = () => {
 
   useEffect(() => {
     if (token) {
+      dispatch(startLogin());
       dispatch(startLoadingOffers());
     }
-    dispatch(startLogin());
 
     // onAuthStateChanged(FirebaseAuth, async (user) => {
     //   if (!user) return dispatch(logout(""));

@@ -57,7 +57,7 @@ export const startLogin = () => {
       );
 
       const payload = await res.json();
-      console.log(payload);
+      // console.log(payload);
 
       dispatch(
         login({
@@ -109,7 +109,7 @@ export const startSignInWithEmailPassword = ({ email = "", password = "" }) => {
       );
 
       const payload = await user.json();
-      console.log(payload);
+      // console.log(payload);
       if (!payload) throw new Error("payload don't exist");
 
       dispatch(
@@ -279,20 +279,17 @@ export const startUploadImages = (files: FileList) => {
 
         // console.log(payload);
 
-        const cloudinaryPUT = await fetch(
-          "https://juniorhub.somee.com/api/employer",
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newProfile),
-          }
-        );
-        const dat = await cloudinaryPUT.json();
+        await fetch("https://juniorhub.somee.com/api/employer", {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newProfile),
+        });
+        // const dat = await cloudinaryPUT.json();
         // console.log(cloudinaryPUT);
-        console.log(dat);
+        // console.log(dat);
 
         dispatch(setUploadImage(data.url));
       } catch (error) {

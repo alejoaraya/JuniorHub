@@ -147,6 +147,9 @@ export const startDeleteNote = () => {
 
 export const startLoadingOffers = () => {
   return async (dispatch: Dispatch) => {
+    // const { status } = getState().auth;
+    // if (status === "not-authenticated") return;
+
     const res = await loadOffers();
 
     dispatch(setOffers(res));
@@ -197,7 +200,7 @@ export const startSavingActiveOffer = (application: Offer) => {
     );
     // console.log("res", res);
     const data = await res.json();
-    console.log("data", data);
+    // console.log("data", data);
 
     // return data.offers;
 

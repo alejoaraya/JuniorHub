@@ -137,7 +137,7 @@ export const NoteView = () => {
   //   dispatch(startUploadImages(target.files));
   // };
 
-  console.log(offerActive);
+  // console.log(offerActive);
 
   return (
     <Grid
